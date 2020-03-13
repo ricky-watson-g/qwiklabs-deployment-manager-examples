@@ -1,0 +1,50 @@
+resources:
+- name: default-allow-icmp-delete
+  action: gcp-types/compute-v1:compute.firewalls.delete
+  properties:
+    firewall: default-allow-icmp
+    project: {{ env["project"] }}
+  metadata:
+    runtimePolicy:
+    - CREATE
+
+- name: default-allow-internal-delete
+  action: gcp-types/compute-v1:compute.firewalls.delete
+  properties:
+    firewall: default-allow-internal
+    project: {{ env["project"] }}
+  metadata:
+    runtimePolicy:
+    - CREATE
+
+- name: default-allow-rdp-delete
+  action: gcp-types/compute-v1:compute.firewalls.delete
+  properties:
+    firewall: default-allow-rdp
+    project: {{ env["project"] }}
+  metadata:
+    runtimePolicy:
+    - CREATE
+
+- name: default-allow-ssh-delete
+  action: gcp-types/compute-v1:compute.firewalls.delete
+  properties:
+    firewall: default-allow-ssh
+    project: {{ env["project"] }}
+  metadata:
+    runtimePolicy:
+    - CREATE
+
+- name: default-network-delete
+  action: gcp-types/compute-v1:compute.networks.delete
+  properties:
+    network: default
+    project: {{ env["project"] }}
+  metadata:
+    runtimePolicy:
+    - CREATE
+    dependsOn:
+    - default-allow-icmp-delete
+    - default-allow-internal-delete
+    - default-allow-rdp-delete
+    - default-allow-ssh-delete
