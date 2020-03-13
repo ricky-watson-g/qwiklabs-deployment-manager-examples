@@ -1,0 +1,80 @@
+{% set ZONE = "us-central1-b" %}
+{% set REGION = "us-central1" %}
+
+resources:
+{# Network #}
+- name: acme-vpc
+  type: gcp-types/compute-v1:networks
+  properties:
+    description: "Acme VPC"
+    autoCreateSubnetworks: false
+
+{# Subnet #}
+- name: acme-mgmt-subnet
+  type: gcp-types/compute-v1:subnetworks
+  properties:
+    ipCidrRange: 192.168.10.0/24
+    network: $(ref.acme-vpc.selfLink)
+    region: {{ REGION }}
+    privateIpGoogleAccess: true
+    enableFlowLogs: true
+    logConfig:
+      enable: true
+      flowSampling: 1
+
+{# Cloud Router/NAT #}
+- name: acme-rtr
+  type: compute.v1.router
+  properties:
+    network: $(ref.acme-vpc.selfLink)
+    region: {{ REGION }}
+    nats:
+    - name: acme-nat
+      sourceSubnetworkIpRangesToNat: LIST_OF_SUBNETWORKS
+      subnetworks:
+      - name: $(ref.acme-mgmt-subnet.selfLink)
+        sourceIpRangesToNat: 
+        - PRIMARY_IP_RANGE
+      natIpAllocateOption: AUTO_ONLY
+
+{# firewall rule: IAP SSH access #}
+- name: fw-iap-ssh-ingress
+  type: gcp-types/compute-v1:firewalls
+  properties:
+    network: projects/{{ env['project'] }}/global/networks/acme-vpc
+    sourceRanges: [35.235.240.0/20]
+    priority: 100
+    allowed:
+    - IPProtocol: tcp
+      ports: [22]
+    targetTags:
+    - ssh-iap-ingress
+  metadata:
+    dependsOn: 
+    - acme-vpc
+
+{# instance: bastion #}
+- name: bastion
+  type: compute.v1.instance
+  properties:
+    zone: {{ ZONE }}
+    machineType: projects/{{ env["project"] }}/zones/{{ ZONE }}/machineTypes/n1-standard-1
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: projects/debian-cloud/global/images/family/debian-9
+    networkInterfaces:
+    - subnetwork: regions/{{ REGION }}/subnetworks/acme-mgmt-subnet
+    serviceAccounts:
+    - email: default
+      scopes: 
+      - https://www.googleapis.com/auth/cloud-platform
+    tags:
+      items:
+        - ssh-iap-ingress
+  metadata:
+    dependsOn: 
+    - acme-mgmt-subnet
