@@ -3,7 +3,7 @@ Creating Google Deployment Manager configuration for qwiklabs labs can be a chal
 
 ## Examples
 
-* [Cloud NAT](examples/cloud_nat/README.md)
-* [Delete Default VPC](examples/delete_default_vpc/README.md)
-* [Enable Service](examples/enable_service/README.md)
-* [Run gcloud Command](examples/run_gcloud_command/README.md)
+* [Cloud NAT](examples/cloud_nat)
+* [Delete Default VPC](examples/delete_default_vpc)
+* [Enable Service](examples/enable_service)
+* [Run gcloud Command](examples/run_gcloud_command)
