@@ -20,7 +20,7 @@ ENTRYPOINT ["/tmp/action.sh"]
 
 As you can see it installs the latest Google Cloud SDK.  action.sh uses the first four CloudBuild arguments to setup the gcloud environment.  
 
-The KEY variable holds service keys in json for the qwiklabs service account created within the project.  The qwiklabs service account has the same permissions as the ones assigned to the user.
+The KEY variable holds service keys in json for the qwiklabs service account created within the project.  The qwiklabs service account has the same permissions as the user.
 
 The rest of the arguments are passed to gcloud.
 
