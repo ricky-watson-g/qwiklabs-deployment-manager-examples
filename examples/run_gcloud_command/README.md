@@ -3,7 +3,7 @@
 If you need to run a gcloud command and you don't want to create an instance you can use
 CloudBuild.
 
-This example will elevate the default permissions of the service account used by Deployment Manager.
+This example will elevate the default permissions of the service account used by Deployment Manager.  To run this example you need to have `roles/resourcemanager.projectIamAdmin` and `roles/owner` as permissions on the lab.
 
 The Dockerfile for the image registry.hub.docker.com/gcptraining/ql-cloudbuild-gcloud:2.0 is:
 
