@@ -1,0 +1,63 @@
+resources:
+{# elevate DM permissions #}
+- name: elevate-dm-permissions
+  action: gcp-types/cloudbuild-v1:cloudbuild.projects.builds.create
+  metadata:
+    runtimePolicy:
+    - UPDATE_ALWAYS
+  properties:
+    steps:
+    - name: registry.hub.docker.com/gcptraining/ql-cloudbuild-gcloud:1.0
+      args:
+      - {{ env['project'] }}
+      - {{ properties['region'] }}
+      - {{ properties['zone'] }}
+      - '{{ properties['keyFile'] }}'
+      - projects
+      - add-iam-policy-binding
+      - {{ env['project'] }} 
+      - --member 
+      - serviceAccount:{{ env['project_number'] }}@cloudservices.gserviceaccount.com
+      - --role
+      - roles/owner
+    - name: registry.hub.docker.com/gcptraining/ql-cloudbuild-gcloud:1.0
+      args:
+      - {{ env['project'] }}
+      - {{ properties['region'] }}
+      - {{ properties['zone'] }}
+      - '{{ properties['keyFile'] }}'
+      - projects
+      - add-iam-policy-binding
+      - {{ env['project'] }} 
+      - --member 
+      - serviceAccount:{{ env['project_number'] }}@cloudservices.gserviceaccount.com
+      - --role
+      - roles/resourcemanager.projectIamAdmin
+    timeout: 120s
+
+{# Turn on logging for IAP #}
+- name: get-etag-auditConfigs
+  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
+  properties:
+    resource: {{ env["project"] }}
+  metadata:
+    dependsOn: 
+    - elevate-dm-permissions
+
+- name: patch-auditConfigs-policy
+  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
+  properties:
+    resource: {{ env["project"] }}
+    policy: 
+      etag: $(ref.get-etag-auditConfigs.etag)
+      auditConfigs:
+      - auditLogConfigs:
+        - logType: DATA_READ
+        - logType: ADMIN_READ
+        - logType: DATA_WRITE
+        service: iap.googleapis.com
+    updateMask: auditConfigs,etag
+  metadata:
+    dependsOn: 
+    - get-etag-auditConfigs
+
