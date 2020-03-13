@@ -45,7 +45,7 @@ gcloud config set compute/zone ${ZONE}
 gcloud $*
 ```
 
-This snippet is a simple deomstration of running `gcloud compute instances list`:
+This snippet is a simple demonstration of running `gcloud compute instances list`:
 
 ```
 - name: task_title
