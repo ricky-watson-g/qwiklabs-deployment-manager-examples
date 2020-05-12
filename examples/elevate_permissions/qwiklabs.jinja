@@ -34,16 +34,3 @@ resources:
       - --role
       - roles/resourcemanager.projectIamAdmin
     timeout: 120s
-
-- name: run-gcloud-info
-  action: gcp-types/cloudbuild-v1:cloudbuild.projects.builds.create
-  metadata:
-    runtimePolicy:
-    - UPDATE_ALWAYS
-  properties:
-    steps:
-    - name: 'google/cloud-sdk'
-      args: ['gcloud', 'info']
-    metadata:
-      dependsOn: 
-      - elevate-cb-permissions
