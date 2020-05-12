@@ -1,4 +1,49 @@
-# Elevate cloudbuild permissions to owner
-
 resources:
-- name: 
+{# elevate CloudBuild permissions #}
+- name: elevate-cb-permissions
+  action: gcp-types/cloudbuild-v1:cloudbuild.projects.builds.create
+  metadata:
+    runtimePolicy:
+    - UPDATE_ALWAYS
+  properties:
+    steps:
+    - name: registry.hub.docker.com/gcptraining/ql-cloudbuild-gcloud:2.0
+      args:
+      - {{ env['project'] }}
+      - {{ properties['region'] }}
+      - {{ properties['zone'] }}
+      - '{{ properties['keyFile'] }}'
+      - projects
+      - add-iam-policy-binding
+      - {{ env['project'] }} 
+      - --member 
+      - serviceAccount:{{ env['project_number'] }}@cloudbuild.gserviceaccount.com
+      - --role
+      - roles/owner
+    - name: registry.hub.docker.com/gcptraining/ql-cloudbuild-gcloud:2.0
+      args:
+      - {{ env['project'] }}
+      - {{ properties['region'] }}
+      - {{ properties['zone'] }}
+      - '{{ properties['keyFile'] }}'
+      - projects
+      - add-iam-policy-binding
+      - {{ env['project'] }} 
+      - --member 
+      - serviceAccount:{{ env['project_number'] }}@cloudbuild.gserviceaccount.com
+      - --role
+      - roles/resourcemanager.projectIamAdmin
+    timeout: 120s
+
+- name: run-gcloud-info
+  action: gcp-types/cloudbuild-v1:cloudbuild.projects.builds.create
+  metadata:
+    runtimePolicy:
+    - UPDATE_ALWAYS
+  properties:
+    steps:
+    - name: 'google/cloud-sdk'
+      args: ['gcloud', 'info']
+    metadata:
+      dependsOn: 
+      - elevate-cb-permissions
