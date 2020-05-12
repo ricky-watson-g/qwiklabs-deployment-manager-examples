@@ -44,7 +44,7 @@ resources:
 
 Once run, the Cloud Build output displays the results:
 
-![results](elevate_permissions/results.png)
+![results](results.png)
 
 Make sure you:
 
