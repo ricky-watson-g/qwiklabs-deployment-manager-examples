@@ -49,4 +49,4 @@ Once run, the Cloud Build output displays the results:
 Make sure you:
 
 1. Give your lab `roles/owner` and `roles/resourcemanager.projectIamAdmin`.
-2. Ensure all actions requiring elevation use `dependOn`.
+2. Ensure all actions requiring elevation use `dependsOn`.
