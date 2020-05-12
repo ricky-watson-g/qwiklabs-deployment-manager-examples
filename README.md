@@ -7,3 +7,4 @@ Creating Google Deployment Manager configuration for qwiklabs labs can be a chal
 * [Delete Default VPC](examples/delete_default_vpc)
 * [Enable Service](examples/enable_service)
 * [Run gcloud Command](examples/run_gcloud_command)
+* [Elevate service accounts using Deployment Manager](examples/elevate_permissions)
